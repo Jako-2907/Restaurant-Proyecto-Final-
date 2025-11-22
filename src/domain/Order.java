@@ -1,106 +1,58 @@
 package domain;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Represents a customer order in the restaurant.
- */
-public class Order implements Serializable {
+public class Order {
+    public enum OrderStatus { OPEN, CLOSED }
 
-    private static final long serialVersionUID = 1L;
-
-    public enum OrderStatus {
-        OPEN,
-        CLOSED,
-        CANCELLED
-    }
-
-    private UUID id;
-    private Customer customer;
-    private List<MenuItem> items;
+    private final int id;
+    private final Customer customer;
+    private final List<MenuItem> items;
     private OrderStatus status;
-    private LocalDateTime createdAt;
 
-    public Order(Customer customer) {
-        this.id = UUID.randomUUID();
+    public Order(int id, Customer customer) {
+        this.id = id;
         this.customer = customer;
         this.items = new ArrayList<>();
         this.status = OrderStatus.OPEN;
-        this.createdAt = LocalDateTime.now();
     }
 
-    public UUID getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public Customer getCustomer() { return customer; }
+    public List<MenuItem> getItems() { return new ArrayList<>(items); }
+    public OrderStatus getStatus() { return status; }
+    public void setStatus(OrderStatus status) { this.status = status; }
 
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public List<MenuItem> getItems() {
-        return items;
-    }
-
-    // Adds item to order
     public void addItem(MenuItem item) {
-        items.add(item);
+        if (status == OrderStatus.OPEN) items.add(item);
     }
 
-    // Removes item by ID
-    public boolean removeItemById(String itemId) {
-        return items.removeIf(i -> i.getId().equals(itemId));
-    }
-
-    // Calculates total price
-    public BigDecimal calculateTotal() {
-        return items.stream()
-                .map(MenuItem::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    // Dentro de la clase Order
-    public int countItem(String itemId) {
+    public int countItem(int menuItemId) {
         int count = 0;
-        for (MenuItem m : items) {
-            if (m.getId().equals(itemId)) {
-                count++;
-            }
-        }
+        for (MenuItem m : items) if (m.getId() == menuItemId) count++;
         return count;
     }
 
-    public void removeItem(String itemId, int quantity) {
+    public void removeItem(int menuItemId, int quantity) {
+        if (status != OrderStatus.OPEN) return;
         int removed = 0;
-        for (int i = 0; i < items.size() && removed < quantity;) {
-            MenuItem m = items.get(i);
-            if (m.getId().equals(itemId)) {
-                items.remove(i);
-                removed++;
-            } else {
-                i++;
-            }
+        Iterator<MenuItem> iter = items.iterator();
+        while (iter.hasNext() && removed < quantity) {
+            MenuItem m = iter.next();
+            if (m.getId() == menuItemId) { iter.remove(); removed++; }
         }
     }
 
+    public double calculateTotal() {
+        double total = 0.0;
+        for (MenuItem m : items) total += m.getPrice();
+        return total;
+    }
+
+    @Override
+    public String toString() {
+        return id + " -> " + customer.getName() + " | Items: " + items.size() + " | Status: " + status;
+    }
 }
