@@ -1,56 +1,27 @@
 package domain;
 
-import java.io.Serializable;
-import java.util.UUID;
+public class Customer {
+    private final int id;
+    private final String name;
+    private final String phone;
+    private Table table; // assigned table; can be null
 
-/**
- * Represents a customer who places orders in the restaurant.
- */
-public class Customer implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private UUID id;
-    private String name;
-    private String phone;
-
-    public Customer(String name, String phone) {
-        this.id = UUID.randomUUID();
+    public Customer(int id, String name, String phone) {
+        this.id = id;
         this.name = name;
         this.phone = phone;
+        this.table = null;
     }
 
-    public UUID getId() {
-        return id;
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getPhone() { return phone; }
+    public Table getTable() { return table; }
+    public void setTable(Table table) { this.table = table; }
+
+    @Override
+    public String toString() {
+        String tableInfo = (table != null) ? (" | Table #" + table.getId()) : "";
+        return id + " -> " + name + " | phone=" + phone + tableInfo;
     }
-
-    // ID should not be modified normally; no setter provided
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    // Dentro de la clase Customer
-    private Table table; // atributo
-
-    public void setTable(Table table) {
-        this.table = table;
-    }
-
-    public Table getTable() {
-        return this.table;
-    }
-
 }

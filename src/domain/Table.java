@@ -1,16 +1,8 @@
 package domain;
 
-import java.io.Serializable;
-
-/**
- * Represents a physical table inside the restaurant.
- */
-public class Table implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private int id;
-    private int seats;
+public class Table {
+    private final int id;
+    private final int seats;
     private boolean occupied;
 
     public Table(int id, int seats) {
@@ -19,19 +11,13 @@ public class Table implements Serializable {
         this.occupied = false;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public int getSeats() { return seats; }
+    public boolean isOccupied() { return occupied; }
+    public void setOccupied(boolean occupied) { this.occupied = occupied; }
 
-    public int getSeats() {
-        return seats;
-    }
-
-    public boolean isOccupied() {
-        return occupied;
-    }
-
-    public void setOccupied(boolean occupied) {
-        this.occupied = occupied;
+    @Override
+    public String toString() {
+        return id + " -> Seats: " + seats + " | Occupied: " + occupied;
     }
 }
